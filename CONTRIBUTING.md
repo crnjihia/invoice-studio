@@ -26,7 +26,7 @@ Before contributing code, please keep in mind our core non-negotiable architectu
 ### 2. Setup
 ```bash
 # Clone your fork
-git clone https://github.com/<your-username>/invoice-studio.git
+git clone https://github.com/crnjihia/invoice-studio.git
 cd invoice-studio
 
 # Install dependencies (configures native better-sqlite3 for Electron 31)
