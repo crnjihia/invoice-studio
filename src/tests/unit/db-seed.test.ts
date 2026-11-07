@@ -4,6 +4,7 @@ import Database from 'better-sqlite3';
 import { runMigrations } from '../../main/db/migrator';
 import {
   seedDatabase,
+  clearDatabase,
   SEED_CLIENTS,
   SEED_INVOICES,
   SEED_EXPENSES,
@@ -154,4 +155,22 @@ describe('Database Seed Data Suite (Kenyan Freelance & SME)', () => {
     const tempClient = db.prepare('SELECT * FROM clients WHERE id = ?').get('cli-temp');
     expect(tempClient).toBeUndefined();
   });
+
+  it('completely wipes all tables when clearDatabase is invoked', () => {
+    seedDatabase(db, true);
+    expect((db.prepare('SELECT COUNT(*) as count FROM clients').get() as { count: number }).count).toBe(8);
+    expect((db.prepare('SELECT COUNT(*) as count FROM invoices').get() as { count: number }).count).toBe(9);
+    expect((db.prepare('SELECT COUNT(*) as count FROM expenses').get() as { count: number }).count).toBe(8);
+
+    clearDatabase(db);
+
+    expect((db.prepare('SELECT COUNT(*) as count FROM clients').get() as { count: number }).count).toBe(0);
+    expect((db.prepare('SELECT COUNT(*) as count FROM invoices').get() as { count: number }).count).toBe(0);
+    expect((db.prepare('SELECT COUNT(*) as count FROM expenses').get() as { count: number }).count).toBe(0);
+    expect((db.prepare('SELECT COUNT(*) as count FROM invoice_items').get() as { count: number }).count).toBe(0);
+    expect((db.prepare('SELECT COUNT(*) as count FROM payments').get() as { count: number }).count).toBe(0);
+    expect((db.prepare('SELECT COUNT(*) as count FROM invoice_sequences').get() as { count: number }).count).toBe(0);
+    expect((db.prepare('SELECT COUNT(*) as count FROM business_profile').get() as { count: number }).count).toBe(0);
+  });
 });
+

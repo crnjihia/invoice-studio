@@ -9,8 +9,7 @@ import {
   FolderOpen,
   AlertTriangle,
   X,
-  CheckCircle2,
-  Sparkles
+  CheckCircle2
 } from 'lucide-react';
 import { BackupInfo, RestorePreview, BackupType } from '@shared/types';
 import { useUiStore } from '../../store/useUiStore';
@@ -21,7 +20,6 @@ export const BackupView: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
-  const [isSeeding, setIsSeeding] = useState(false);
 
   // Restore Modal State
   const [restoreCandidate, setRestoreCandidate] = useState<{
@@ -104,27 +102,6 @@ export const BackupView: React.FC = () => {
     }
   };
 
-  const handleSeedDemoData = async (): Promise<void> => {
-    const confirmed = window.confirm(
-      'Load rich sample Kenyan SME demo data (8 clients, 9 invoices across Q1/Q2 2026, and 8 expenses)? Existing records will be refreshed.'
-    );
-    if (!confirmed) return;
-
-    setIsSeeding(true);
-    try {
-      const result = await window.api.backups.seedDemoData(true);
-      showToast(
-        `Successfully loaded ${result.clientCount} clients, ${result.invoiceCount} invoices, and ${result.expenseCount} expenses!`,
-        'success'
-      );
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to load sample data';
-      showToast(message, 'error');
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
   const formatSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -175,16 +152,6 @@ export const BackupView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => void handleSeedDemoData()}
-            disabled={isSeeding}
-            className="flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50/70 px-3.5 py-2 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20 shadow-sm transition-colors disabled:opacity-50"
-            title="Populate 8 realistic Kenyan SME clients, 9 invoices across Q1/Q2 2026, and 8 expenses"
-          >
-            <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            {isSeeding ? 'Loading Demo...' : 'Load Sample SME Data'}
-          </button>
           <button
             type="button"
             onClick={handleSelectFolder}

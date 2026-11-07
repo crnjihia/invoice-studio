@@ -695,3 +695,22 @@ export function seedDatabase(
     expenseCount: SEED_EXPENSES.length
   };
 }
+
+/**
+ * Completely clears all records from all business tables, leaving schema and migrations intact.
+ */
+export function clearDatabase(db: Database.Database): void {
+  const transaction = db.transaction(() => {
+    db.prepare('DELETE FROM invoice_items').run();
+    db.prepare('DELETE FROM payments').run();
+    db.prepare('DELETE FROM invoices').run();
+    db.prepare('DELETE FROM expenses').run();
+    db.prepare('DELETE FROM clients').run();
+    db.prepare('DELETE FROM invoice_sequences').run();
+    db.prepare('DELETE FROM business_profile').run();
+  });
+
+  transaction();
+  console.info('[Database] Cleared all data: clients, invoices, expenses, payments, sequences, and profile.');
+}
+

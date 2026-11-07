@@ -14,3 +14,4 @@ const result = spawnSync(electronPath, [viteNodePath, targetScript, ...process.a
 });
 
 process.exit(result.status ?? 0);
+
