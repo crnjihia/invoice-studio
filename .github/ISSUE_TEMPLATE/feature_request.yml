@@ -38,3 +38,4 @@ body:
           required: true
         - label: This feature aligns with integer minor-unit financial arithmetic and zero data loss.
           required: true
+

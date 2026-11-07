@@ -3,8 +3,8 @@
 
 > **Hardened, offline-first native desktop invoicing and financial management suite for Kenyan freelancers, consultants, and SMEs with unreliable connectivity. Engineered to never lose data.**
 
-[![CI](https://github.com/crnjis/invoice-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/crnjis/invoice-studio/actions/workflows/ci.yml)
-[![Release](https://github.com/crnjis/invoice-studio/actions/workflows/release.yml/badge.svg)](https://github.com/crnjis/invoice-studio/actions/workflows/release.yml)
+[![CI](https://github.com/crnjihia/invoice-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/crnjihia/invoice-studio/actions/workflows/ci.yml)
+[![Release](https://github.com/crnjihia/invoice-studio/actions/workflows/release.yml/badge.svg)](https://github.com/crnjihia/invoice-studio/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](docs/code-signing.md)
 [![Currency](https://img.shields.io/badge/Currency-KES%20(Kenyan%20Shilling)-emerald.svg)](#kenyan-market-tailoring)
@@ -80,7 +80,7 @@ flowchart TD
 
 ## 3. Core Features
 
-### 🇰🇪 Kenyan Market Tailoring
+### Kenyan Market Tailoring
 - **KES Integer Arithmetic**: All monetary amounts are computed in integer minor units (cents) to completely eliminate floating-point rounding errors.
 - **Kenyan Value Added Tax (VAT)**: 16% standard VAT calculations applied by default with editable line-item tax rate overrides.
 - **Safaricom M-Pesa Settlement Rails**: Native tracking for M-Pesa Paybill numbers, Buy Goods Till numbers, mobile phone numbers, and official M-Pesa receipt confirmation references (e.g., `QBK8947K12`).
@@ -137,7 +137,7 @@ flowchart TD
 ### Development Setup
 ```bash
 # 1. Clone repository
-git clone https://github.com/crnjis/invoice-studio.git
+git clone https://github.com/crnjihia/invoice-studio.git
 cd invoice-studio
 
 # 2. Install dependencies (auto-configures better-sqlite3 for Electron)
@@ -245,7 +245,6 @@ invoice-studio/
 └── package.json            # Scripts and dependency specifications
 ```
 
----
 
 ## 11. Architectural Decision Records (ADRs)
 
@@ -265,4 +264,4 @@ Key architectural choices are formally documented in the [`docs/adr/`](docs/adr/
 
 **Invoice Studio** is open source software licensed under the [MIT License](LICENSE).
 
-Developed with ❤️ for Kenyan software engineers, freelancers, and small businesses by **Chris** (Nairobi, Kenya).
+Developed with ❤️ for Kenyan Software Engineers, Freelancers, and Small Businesses by **Christopher Njihia**.

@@ -33,7 +33,7 @@ If you discover a potential security vulnerability in Invoice Studio, please do 
 
 Please report vulnerabilities privately via email:
 
-📧 **crnjihia@gmail.com** / **chris@invoicestudio.local**
+📧 **crnjihia@gmail.com**
 
 ### What to Include:
 - A detailed description of the vulnerability.
@@ -42,6 +42,7 @@ Please report vulnerabilities privately via email:
 - Your assessment of potential impact or exploitability.
 
 ### Our Commitment:
-- We will acknowledge receipt of your security vulnerability report within **48 hours**.
-- We will provide regular updates regarding our investigation and remediation timeline.
-- We will notify you before any public release or security advisory is issued.
+- I will acknowledge receipt of your security vulnerability report within **48 hours**.
+- I will provide regular updates regarding the investigation and remediation timeline.
+- I will notify you before any public release or security advisory is issued.
+

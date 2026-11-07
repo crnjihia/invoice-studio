@@ -1,6 +1,6 @@
 # Contributing to Invoice Studio
 
-Thank you for your interest in contributing to **Invoice Studio**! We welcome bug reports, documentation enhancements, design improvements, and feature contributions from the community.
+Thank you for your interest in contributing to **Invoice Studio**! I welcome bug reports, documentation enhancements, design improvements, and feature contributions from the community.
 
 ---
 
@@ -63,7 +63,7 @@ npm run test:perf
 
 ## 📝 Commit Conventions
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
+I follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 - `feat:` A new user-facing feature
 - `fix:` A bug fix

@@ -26,3 +26,4 @@ Please verify that all the following checks pass before submitting:
 - [ ] Any new IPC channels are registered in `IPC_CHANNELS` and validated with strict Zod schemas.
 - [ ] Offline functionality is preserved; no hard cloud or external network dependencies are introduced.
 - [ ] Documentation (README, ADRs, comments) updated if necessary.
+
