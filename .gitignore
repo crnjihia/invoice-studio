@@ -4,7 +4,6 @@ node_modules/
 # Build artifacts
 dist/
 out/
-build/
 release/
 
 # SQLite databases, WAL, and shm files
