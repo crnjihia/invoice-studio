@@ -1,21 +1,30 @@
 <!-- path: README.md -->
 # Invoice Studio (`invoice-studio`)
 
-> **Offline-first native desktop invoicing and expense management for Kenyan freelancers and small businesses with unreliable connectivity. Engineered to never lose data.**
+> **Hardened, offline-first native desktop invoicing and financial management suite for Kenyan freelancers, consultants, and SMEs with unreliable connectivity. Engineered to never lose data.**
 
 [![CI](https://github.com/crnjis/invoice-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/crnjis/invoice-studio/actions/workflows/ci.yml)
 [![Release](https://github.com/crnjis/invoice-studio/actions/workflows/release.yml/badge.svg)](https://github.com/crnjis/invoice-studio/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](docs/code-signing.md)
 [![Currency](https://img.shields.io/badge/Currency-KES%20(Kenyan%20Shilling)-emerald.svg)](#kenyan-market-tailoring)
+[![Tests](https://img.shields.io/badge/Tests-100%25%20Passing%20(26%20Suites)-success.svg)](#9-testing--quality-verification)
+
+---
+
+## 📸 Application Preview
+
+![Invoice Studio Desktop Dashboard](docs/assets/dashboard.png)
+
+*Figure 1: Invoice Studio running in dark mode on Windows 11 with live financial pulse cards, sequential Kenyan SME invoices, multi-status filters, and instant CSV accounting exports.*
 
 ---
 
 ## 1. What & Why
 
-Freelancers and software consultants working in Nairobi and throughout Kenya face frequent power cuts, intermittent mobile data hotspot tethering, and unreliable broadband. Cloud-only SaaS invoicing tools risk dropping unsaved edits during sudden disconnections, leaking sensitive client financial records, or holding user data hostage behind monthly subscription paywalls.
+Freelancers and engineering consultants working in Nairobi and throughout Kenya frequently experience power blackouts, erratic broadband, and unstable mobile hotspot tethering. Cloud-only SaaS invoicing platforms risk dropping unsaved edits during unexpected disconnections, leaking sensitive client financial records, or locking users out behind recurring dollar-denominated subscription paywalls.
 
-**Invoice Studio** is a hardened, offline-first desktop suite that operates with **zero cloud dependencies**. Your entire ledger lives locally in an ACID-compliant SQLite database, performs minor-unit accounting in Kenyan Shillings (KES), generates high-definition vector PDFs directly with Chromium's print engine, and safeguards every draft with atomic crash-safe write journals.
+**Invoice Studio** is a hardened, offline-first desktop suite that operates with **zero cloud dependencies**. Your entire financial ledger lives locally in an ACID-compliant SQLite database, performs integer minor-unit accounting in Kenyan Shillings (KES), generates high-definition vector PDFs directly with Chromium's print engine, and safeguards every draft with atomic crash-safe write journals.
 
 ---
 
@@ -25,7 +34,7 @@ Freelancers and software consultants working in Nairobi and throughout Kenya fac
 flowchart TD
     subgraph HostOS["Host Operating System"]
         LocalDisk["Local Disk (%APPDATA% / ~/Library)"]
-        PrintService["Chromium PDF Engine"]
+        PrintService["Chromium Headless PDF Engine"]
     end
 
     subgraph MainProcess["Electron Main Process (Privileged Node.js)"]
@@ -69,144 +78,122 @@ flowchart TD
 
 ---
 
-## 3. UI Screenshot & Layout Breakdown
+## 3. Core Features
 
-```
-+----------------------------------------------------------------------------------+
-|  [IS] Invoice Studio      [Sandboxed Native]    v0.1.0 (win32)     [Dark Mode]   |
-+----------------------------------------------------------------------------------+
-|  [ + New Invoice (Ctrl+N) ]   [ + Add Client ]   [ + Expense ]   [ Backups ]      |
-+----------------------------------------------------------------------------------+
-|  FINANCIAL SUMMARY (JAN - MAR 2026)                                              |
-|  Total Invoiced: KES 450,000.00  |  Revenue: KES 320,000.00  | Outstanding: ...  |
-+----------------------------------------------------------------------------------+
-|  INVOICES                      | ACTIVE INVOICE EDITOR                           |
-|  [Search invoices...]          | Number: INV-2026-0042        Status: Draft      |
-|  - INV-2026-0042 (Draft)       | Client: Nairobi Silicon Savannah Ltd            |
-|  - INV-2026-0041 (Paid, M-Pesa)| Issue: 2026-03-01   Due: 2026-03-31   Curr: KES  |
-|  - INV-2026-0040 (Overdue)     | ----------------------------------------------- |
-|                                | Item: Cloud Migration & API Integration         |
-|                                | Qty: 1   Rate: KES 100,000.00   VAT: 16%        |
-|                                | Subtotal: KES 100,000.00  Tax: KES 16,000.00    |
-|                                | Total: KES 116,000.00                           |
-|                                | [ Export PDF ]  [ M-Pesa Record ]  [ Save ]     |
-+----------------------------------------------------------------------------------+
-|  Status: Offline Mode (Working Locally) | SQLite WAL Active | Zero Cloud Lockout |
-+----------------------------------------------------------------------------------+
-```
+### 🇰🇪 Kenyan Market Tailoring
+- **KES Integer Arithmetic**: All monetary amounts are computed in integer minor units (cents) to completely eliminate floating-point rounding errors.
+- **Kenyan Value Added Tax (VAT)**: 16% standard VAT calculations applied by default with editable line-item tax rate overrides.
+- **Safaricom M-Pesa Settlement Rails**: Native tracking for M-Pesa Paybill numbers, Buy Goods Till numbers, mobile phone numbers, and official M-Pesa receipt confirmation references (e.g., `QBK8947K12`).
+- **KRA PIN & Phone Validation**: Strict validation for Kenya Revenue Authority Personal Identification Numbers (`P051234567A`) and Kenyan mobile formats (`+2547...`, `+2541...`, `07...`, `01...`).
+- **Honest Compliance Disclaimer**: Explicitly transparent disclaimer clarifying that automated KRA eTIMS transmission is out of scope and requires official KRA portals.
 
----
+### 💼 Professional Invoicing & Clients
+- **Transactional Gap-Free Numbering**: Sequential annual invoice identifiers (`INV-YYYY-XXXX`) generated inside atomic database transactions with automatic calendar year resets.
+- **Invoice Lifecycle**: Full tracking across `draft`, `sent`, `partially_paid`, `paid`, `overdue`, and `void` statuses.
+- **Automated Overdue Detection**: Background and on-startup evaluation of due dates marking past-due invoices with visual urgency banners.
+- **Client Directory**: Centralized client records with tax PIN badges, billing addresses, and notes.
+- **Fast Duplication**: One-click invoice cloning for recurring monthly retainers and project sprints.
 
-## 4. Core Features
-
-### Kenyan Market Tailoring
-- **Currency**: Kenyan Shilling (`KES`) default with integer minor-unit arithmetic (cents) preventing floating-point rounding errors.
-- **Taxation**: 16% Value Added Tax (VAT) configurable default rate per line item.
-- **Payment Reconciliation**: Native fields for Safaricom M-Pesa transactions (Paybill, Till Number, M-Pesa receipt code e.g. `QHD4561239`), bank accounts, and cash.
-- **Phone & Tax PIN Validation**: Validates Kenyan mobile numbers (`+2547XXXXXXXX`, `+2541XXXXXXXX`, `07...`) and Kenya Revenue Authority PINs (`P051234567A`).
-
-### Accounting & Invoicing
-- **Gap-Free Numbering**: Sequential annual invoice numbers (`INV-YYYY-XXXX`) generated inside atomic database transactions.
-- **Invoice Lifecycle**: Full tracking of `draft`, `sent`, `partially_paid`, `paid`, `overdue`, and `void` statuses.
-- **Automated Overdue Detection**: Background and on-startup evaluation of past-due invoices with payment reminder flags.
-- **Duplication & Templates**: One-click invoice cloning for recurring monthly retainers.
-
-### PDF Invoicing Engine
+### 📄 PDF Invoicing Engine
 - **3 Built-in Professional Templates**:
-  - `Classic`: Formal corporate table layout with bordered breakdown.
-  - `Modern`: Gradient header banner with prominent M-Pesa settlement card.
+  - `Classic`: Corporate layout with detailed financial breakdown tables and signature sections.
+  - `Modern`: Contemporary design featuring bold brand accent colors and M-Pesa settlement cards.
   - `Minimal`: Clean Swiss architectural typography with hairline dividers.
-- **Vector Quality**: Generated via Chromium's headless `webContents.printToPDF` with exact `@page` print style formatting.
-- **One-Click Sharing**: Direct save, reveal in OS file explorer, or prepare email via honest `mailto:` generator.
+- **Chromium Vector Rendering**: Generated via headless Chromium `webContents.printToPDF` with exact `@page` print rules.
+- **Instant Actions**: One-click direct PDF export, OS folder reveal, and honest `mailto:` email dispatch.
 
-### Receipts & Expense Tracking
-- **Content-Addressable Storage**: Attached receipt images (JPEG, PNG, WebP) and PDFs are stored in `<userData>/receipts/` hashed by their SHA-256 checksums, guaranteeing automatic deduplication.
-- **Categorization**: Track expenses across `software`, `equipment`, `travel`, `office`, `marketing`, `subcontractor`, and `utilities`.
+### 🛡️ Zero-Loss Disaster Recovery & Backups
+- **SQLite WAL Mode**: Continuous Write-Ahead Logging prevents database corruption during sudden power outages or forced shutdowns.
+- **Non-Blocking Online Backups**: Creates hot database snapshots without locking tables or interrupting user workflows.
+- **Automated Retention Rotation**: Automatically maintains 7 daily and 4 weekly backup archives.
+- **Pre-Restore Rollback Snapshots**: Restoring any backup takes an immutable safety snapshot of the active database first.
+- **Crash-Resilient Draft Autosave**: Active invoice drafts are continuously written to disk with SHA-256 integrity checksums. A recovery banner automatically appears if the app terminates abnormally.
 
-### Zero-Loss Disaster Recovery & Backups
-- **SQLite WAL Mode**: Continuous Write-Ahead Logging prevents database corruption on abrupt power termination.
-- **Online Backup API**: Consistent point-in-time database snapshots created while the app is running.
-- **Cloud-Folder Sync**: Set your backup directory to Dropbox, Google Drive, or OneDrive for automated off-site safety.
-- **Rotation Policy**: Automatically keeps 7 daily and 4 weekly snapshots.
-- **One-Click Restore**: Restore with integrity preview and an automated pre-restore rollback snapshot.
-- **Crash-Safe Unsaved Draft Recovery**: Atomic `.tmp` file journals preserve active invoice edits during unexpected shutdowns.
-
-### Auto-Update & Staged Canary Rollouts
-- **Bandwidth Safety**: `autoDownload = false` ensures updates never download on metered data without user approval.
-- **Staged Rollouts**: Deterministic client hashing supports progressive canary rollouts (10% $\to$ 25% $\to$ 50% $\to$ 100%) via `stagingPercentage`.
-- **Pre-Update Snapshot**: Mandatory SQLite database backup executed immediately before installing an update.
+### 📊 Financial Pulse & RFC 4180 CSV Reports
+- **Real-Time Pulse Cards**: Instant calculations for Total Billed, Outstanding Balances, and Total Collected.
+- **Spreadsheet Ready Exports**: One-click export of invoice records and categorized operating expenses to standard RFC 4180 CSV files.
 
 ---
 
-## 5. Non-Negotiable Security Baseline
+## 4. Security Baseline
 
 | Measure | Implementation Details |
 | :--- | :--- |
 | **Process Isolation** | `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false`. |
 | **Preload Boundary** | Narrow named ContextBridge methods; raw `ipcRenderer` is never exposed to the DOM. |
-| **IPC Sender Validation** | Every handler validates `event.senderFrame` origin and rejects nested iframes. |
-| **Input Validation** | All incoming IPC arguments validated with strict Zod schemas. |
-| **External URL Guard** | URL scheme allowlist (`https:`, `mailto:`) prevents arbitrary protocol execution. |
+| **IPC Sender Validation** | Every handler validates `event.senderFrame` origin and rejects nested frames or unauthorized origins. |
+| **Zod Schema Validation** | Every IPC input argument is validated against strict Zod runtime schemas before execution. |
+| **External URL Guard** | URL scheme allowlist (`https:`, `http:`, `mailto:`) prevents arbitrary protocol execution. |
 | **Electron Fuses** | Disabled `RunAsNode`, enabled cookie encryption, and enforced `OnlyLoadAppFromAsar`. |
-| **Content Security Policy** | Strict CSP: `default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none';`. |
 
 ---
 
-## 6. Honest Scope Boundary: Kenya KRA eTIMS
-
-> [!IMPORTANT]
-> **Statutory Tax Scope Disclaimer**:
-> Kenya's Kenya Revenue Authority (KRA) enforces electronic tax invoicing regulations under **eTIMS** (electronic Tax Invoice Management System). **Invoice Studio does NOT claim statutory KRA eTIMS compliance and does not transmit fiscal data directly to KRA servers.**
-> It is designed as an internal operational ledger, invoicing generator, and expense tracker for freelancers and small businesses. If you require statutory eTIMS fiscalization, consult a licensed KRA tax agent or utilize the official KRA eTIMS portal alongside this tool.
-
----
-
-## 7. Tech Stack
-
-| Component | Technology | Version | Architectural Rationale |
-| :--- | :--- | :--- | :--- |
-| **Shell** | Electron | `31.2.0` | Native cross-platform desktop runtime with Chromium sandbox |
-| **Frontend** | React + Vite | `18.3.1` / `5.3.4` | Component UI with `electron-vite` fast HMR build tooling |
-| **Styling** | Tailwind CSS | `3.4.6` | High-contrast accessible dark theme and print styling |
-| **Database** | `better-sqlite3` | `11.1.2` | Fast synchronous C++ SQLite driver with WAL mode and Online Backup API |
-| **Validation** | Zod | `3.23.8` | Schema validation on all IPC payloads and domain inputs |
-| **State** | Zustand | `4.5.4` | Lightweight reactive state with localStorage and draft autosave |
-| **PDF** | Chromium `printToPDF` | Built-in | Pixel-perfect vector PDF rendering without external heavy binaries |
-| **Packaging** | `electron-builder` | `24.13.3` | Multi-platform installers (Windows NSIS, macOS DMG, Linux AppImage) |
-| **Testing** | Vitest + Playwright | `1.6.0` / `1.45.3` | Unit, scale (10k), and Electron GUI E2E testing |
-
----
-
-## 8. Quick Start
+## 5. Quickstart & Installation
 
 ### Prerequisites
-- Node.js `20.x` LTS
-- npm `10.x` or higher
-- C++ build tools (for native `better-sqlite3` compilation)
+- **Node.js**: v20+ LTS recommended
+- **Operating System**: Windows 10/11, macOS (Intel & Apple Silicon), or Linux (Ubuntu, Debian, Fedora)
 
-### Installation & Development
+### Development Setup
 ```bash
-# Clone the repository
+# 1. Clone repository
 git clone https://github.com/crnjis/invoice-studio.git
 cd invoice-studio
 
-# Install dependencies and build native SQLite module for Electron ABI
+# 2. Install dependencies (auto-configures better-sqlite3 for Electron)
 npm install
 
-# Start development app with Hot Module Replacement (HMR)
+# 3. Launch application in development mode
 npm run dev
 ```
 
-### Production Build & Packaging
+### Production Launch
 ```bash
-# Compile TypeScript and bundle with Vite
+# Compile bundle and run native desktop GUI
+npm run build
+npm start
+```
+*(On Windows, you can also double-click `run.bat` in the project root)*
+
+---
+
+## 6. Database & CLI Tooling
+
+```bash
+# Seed realistic Kenyan demo data (8 clients, 9 invoices across Q1/Q2 2026, 8 expenses)
+npm run seed
+
+# Clear all database entries back to pristine production state
+npm run db:clear
+```
+
+---
+
+## 7. Packaging & Multi-Platform Releases
+
+```bash
+# Build production bundle
 npm run build
 
-# Package platform-specific installers
-npm run package:win       # Windows NSIS Setup (.exe)
-npm run package:mac       # macOS DMG & Zip (.dmg, .zip)
-npm run package:linux     # Linux AppImage & Debian (.AppImage, .deb)
+# Package installers
+npm run package:win       # Windows NSIS Setup (.exe) -> dist/
+npm run package:mac       # macOS DMG & Zip (.dmg, .zip) -> dist/
+npm run package:linux     # Linux AppImage & Debian (.AppImage, .deb) -> dist/
+
+# Verify release assets and auto-update manifests
+npm run verify:assets
 ```
+
+---
+
+## 8. Keyboard Shortcuts
+
+| Shortcut | Action | Scope |
+| :--- | :--- | :--- |
+| `Ctrl+N` / `Cmd+N` | Create New Invoice (opens Editor) | Global |
+| `Ctrl+B` / `Cmd+B` | Open Backups & Safety Manager | Global |
+| `Ctrl+Shift+I` | Toggle Developer Tools | Development |
+| `Escape` | Close active modal dialog | Modal |
 
 ---
 
@@ -221,10 +208,10 @@ npm run typecheck
 # 2. Run ESLint code quality analysis
 npm run lint
 
-# 3. Run all unit and integration tests (23 suites, 90 tests)
+# 3. Run all unit test suites (23 suites, 98 tests)
 npm test
 
-# 4. Run the 10,000 Invoices Scale & Performance Benchmark
+# 4. Run the 10,000 Invoices Scale & Multi-Index Benchmark
 npm run test:perf
 
 # 5. Run Playwright Electron End-to-End GUI Test
@@ -233,25 +220,49 @@ npm run test:e2e
 
 ---
 
-## 10. Roadmap
+## 10. Project Structure
 
-- [x] Phase 0: Scaffold, hardened window factory, CSP & Electron Fuses.
-- [x] Phase 1: Typed IPC registry, sender validation & error serialization.
-- [x] Phase 2: SQLite in WAL mode, integer minor-unit money arithmetic & migrations.
-- [x] Phase 3: Online SQLite backup API, rotation policy & one-click restore.
-- [x] Phase 4: Client and invoice state management, window state restore, native menus & tray.
-- [x] Phase 5: Headless HTML/CSS PDF templates (Classic, Modern, Minimal) & honest `mailto:`.
-- [x] Phase 6: Expenses with SHA-256 receipts, partial payment tracking & RFC 4180 CSV export.
-- [x] Phase 7: Offline-first network degradation & crash-safe atomic draft recovery.
-- [x] Phase 8: Auto-updates with staged rollouts & SemVer downgrade protection.
-- [x] Phase 9: Electron Builder configurations & GitHub Actions release matrix.
-- [x] Phase 10: Playwright Electron E2E workflow & 10k invoices performance benchmark.
-- [x] Phase 11: Production documentation, ADRs & user data safety guide.
-- [ ] Future: Optional Safaricom Daraja STK Push sandbox integration.
+```text
+invoice-studio/
+├── .github/
+│   └── workflows/          # CI/CD pipelines (test, build, multi-platform release)
+├── build/                  # Packaging icons and entitlements
+├── docs/
+│   ├── adr/                # Architectural Decision Records (ADR 001 - 008)
+│   ├── assets/             # Screenshots and diagrams
+│   ├── architecture.md     # System design & IPC boundary specification
+│   ├── code-signing.md     # Code signing & notarisation setup
+│   └── data-safety-guide.md# Disaster recovery & zero data loss runbook
+├── scripts/                # Launch, test, build, and database CLI scripts
+├── src/
+│   ├── main/               # Electron Main Process (SQLite WAL, IPC handlers, PDF)
+│   ├── preload/            # Hardened ContextBridge preload scripts
+│   ├── renderer/           # Sandboxed React 18 UI with Tailwind CSS
+│   ├── shared/             # Shared TypeScript schemas, types, and money utils
+│   └── tests/              # Unit, integration, scale, and E2E test suites
+├── electron-builder.yml    # Multi-platform installer configuration
+├── electron.vite.config.ts # Electron-Vite bundling configuration
+└── package.json            # Scripts and dependency specifications
+```
 
 ---
 
-## 11. License
+## 11. Architectural Decision Records (ADRs)
 
-MIT License. Copyright &copy; 2026 Chris (Nairobi, Kenya). All rights reserved. See [`LICENSE`](LICENSE) for terms.
+Key architectural choices are formally documented in the [`docs/adr/`](docs/adr/) directory:
+- [ADR 001: SQLite with WAL Mode as Embedded Datastore](docs/adr/001-sqlite-wal-datastore.md)
+- [ADR 002: Integer Minor-Unit Arithmetic for Currency Calculations](docs/adr/002-integer-minor-units-currency.md)
+- [ADR 003: Headless Chromium PDF Generation Strategy](docs/adr/003-headless-chromium-pdf-generation.md)
+- [ADR 004: Gap-Free Sequential Invoice Numbering](docs/adr/004-gap-free-invoice-numbering.md)
+- [ADR 005: Sandboxed Preload and Strongly Typed IPC Boundary](docs/adr/005-sandboxed-ipc-bridge.md)
+- [ADR 006: Crash-Safe Atomic Draft Storage](docs/adr/006-crash-safe-draft-storage.md)
+- [ADR 007: Staged Canary Rollout Architecture](docs/adr/007-staged-canary-rollouts.md)
+- [ADR 008: Content-Addressable Receipt Storage](docs/adr/008-content-addressable-receipts.md)
 
+---
+
+## 12. License & Author
+
+**Invoice Studio** is open source software licensed under the [MIT License](LICENSE).
+
+Developed with ❤️ for Kenyan software engineers, freelancers, and small businesses by **Chris** (Nairobi, Kenya).
