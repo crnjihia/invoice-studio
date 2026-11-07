@@ -44,7 +44,7 @@ export function createMainWindow(): BrowserWindow {
     show: false,
     autoHideMenuBar: false,
     title: 'Invoice Studio',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#020617',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
@@ -64,13 +64,16 @@ export function createMainWindow(): BrowserWindow {
   trackWindowState(mainWindow);
 
   // Strict CSP injection at session level
+  const isDev = Boolean(process.env.ELECTRON_RENDERER_URL);
+  const csp = isDev
+    ? "default-src 'self' http://localhost:* ws://localhost:*; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:*; style-src 'self' 'unsafe-inline' http://localhost:*; img-src 'self' data: blob: http://localhost:*; font-src 'self' data: http://localhost:*; connect-src 'self' http://localhost:* ws://localhost:*;"
+    : "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';";
+
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': [
-          "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';"
-        ]
+        'Content-Security-Policy': [csp]
       }
     });
   });
@@ -81,18 +84,34 @@ export function createMainWindow(): BrowserWindow {
     return { action: 'deny' };
   });
 
-  // Prevent unexpected internal window navigation
+  // Prevent unexpected internal window navigation while allowing app origin
   mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
-    const currentUrl = mainWindow.webContents.getURL();
-    if (navigationUrl !== currentUrl) {
-      event.preventDefault();
-      handleExternalUrl(navigationUrl);
+    if (isDev && process.env.ELECTRON_RENDERER_URL && navigationUrl.startsWith(process.env.ELECTRON_RENDERER_URL)) {
+      return;
     }
+    if (!isDev && navigationUrl.startsWith('file://')) {
+      return;
+    }
+    event.preventDefault();
+    handleExternalUrl(navigationUrl);
   });
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show();
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
+    console.error(`[Window] Failed to load ${validatedURL}: (${errorCode}) ${errorDescription}`);
   });
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    mainWindow.focus();
+  });
+
+  // Fallback to guarantee window visibility even if ready-to-show is delayed
+  setTimeout(() => {
+    if (!mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  }, 1000);
 
   // Load Vite dev server or production index.html
   if (process.env.ELECTRON_RENDERER_URL) {
