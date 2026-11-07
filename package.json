@@ -1,7 +1,15 @@
 {
-  "name": "invoice-studio",
+  "name": "@crnjihia/invoice-studio",
   "version": "0.1.0",
   "description": "Native offline-first invoicing and expense desktop app for freelancers",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "out",
+    "README.md",
+    "LICENSE"
+  ],
   "main": "./out/main/index.js",
   "author": "Christopher Njihia <crnjihia@gmail.com>",
   "repository": {
