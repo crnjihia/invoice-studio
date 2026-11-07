@@ -35,11 +35,15 @@ async function ensureDeps() {
     __dirname,
     '../node_modules/better-sqlite3/build/Release/better_sqlite3.node'
   );
+  const markerFile = path.resolve(
+    __dirname,
+    '../node_modules/better-sqlite3/build/Release/.electron-v125-ready'
+  );
 
   const force = process.argv.includes('--force');
 
-  if (!force && fs.existsSync(betterSqliteBinary)) {
-    console.log('[setup-deps] better-sqlite3 native binary is already present.');
+  if (!force && fs.existsSync(betterSqliteBinary) && fs.existsSync(markerFile)) {
+    console.log('[setup-deps] better-sqlite3 native binary for Electron ABI 125 is already present.');
     return;
   }
 
@@ -86,6 +90,7 @@ async function ensureDeps() {
       );
 
       fs.rmSync(tempDir, { recursive: true, force: true });
+      fs.writeFileSync(markerFile, 'electron-v125');
       console.log('[setup-deps] macOS universal binary successfully built and installed.');
       return;
     } catch (err) {
@@ -104,6 +109,7 @@ async function ensureDeps() {
     if (fs.existsSync(tempTar)) {
       fs.unlinkSync(tempTar);
     }
+    fs.writeFileSync(markerFile, 'electron-v125');
     console.log('[setup-deps] better-sqlite3 native binary installed successfully.');
   } catch (err) {
     console.warn('[setup-deps] Warning during binary setup:', err.message);
