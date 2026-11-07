@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "description": "Native offline-first invoicing and expense desktop app for freelancers",
   "main": "./out/main/index.js",
-  "author": "Chris <chris@invoicestudio.local>",
+  "author": "Christopher Njihia <crnjihia@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crnjihia/invoice-studio.git"
+  },
   "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
@@ -24,6 +28,7 @@
     "package:win": "electron-builder --win",
     "package:mac": "electron-builder --mac",
     "package:linux": "electron-builder --linux",
+    "checksums": "node scripts/generate-checksums.js",
     "verify:assets": "node scripts/verify-release-assets.js"
   },
   "dependencies": {

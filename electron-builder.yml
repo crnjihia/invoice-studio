@@ -23,6 +23,7 @@ files:
       - node_modules/file-uri-to-path/**/*
 
 asar: true
+npmRebuild: false
 asarUnpack:
   - '**/*.node'
 
@@ -91,7 +92,7 @@ linux:
 # Auto-update publishing metadata
 publish:
   provider: github
-  owner: crnjis
+  owner: crnjihia
   repo: invoice-studio
   releaseType: draft
 
