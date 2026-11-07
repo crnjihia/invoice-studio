@@ -1,0 +1,97 @@
+# path: electron-builder.yml
+appId: com.invoicestudio.app
+productName: Invoice Studio
+copyright: Copyright © 2026 Chris, Nairobi. All rights reserved.
+
+directories:
+  output: dist
+  buildResources: build
+
+files:
+  - from: out/main
+    to: out/main
+  - from: out/preload
+    to: out/preload
+  - from: out/renderer
+    to: out/renderer
+  - from: .
+    to: .
+    filter:
+      - package.json
+      - node_modules/better-sqlite3/**/*
+      - node_modules/bindings/**/*
+      - node_modules/file-uri-to-path/**/*
+
+asar: true
+asarUnpack:
+  - '**/*.node'
+
+# Windows Packaging (NSIS)
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
+  verifyUpdateCodeSignature: false
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Invoice Studio
+  uninstallDisplayName: Invoice Studio ${version}
+  deleteAppDataOnUninstall: false
+  runAfterFinish: true
+
+# macOS Packaging (DMG & Hardened Runtime Notarisation)
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  category: public.app-category.finance
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.inherit.plist
+
+dmg:
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+# Linux Packaging (AppImage & DEB)
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+  category: Office;Finance;
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  synopsis: Offline-first native invoicing and expense tracker for freelancers
+  description: Reliable desktop invoicing app with M-Pesa tracking, receipt deduplication, and zero data loss.
+
+# Auto-update publishing metadata
+publish:
+  provider: github
+  owner: crnjis
+  repo: invoice-studio
+  releaseType: draft
+

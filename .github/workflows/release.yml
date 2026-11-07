@@ -1,0 +1,109 @@
+# path: .github/workflows/release.yml
+name: Release Multi-Platform Installers
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (do not publish draft release)'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-package:
+    name: Package ${{ matrix.name }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows (NSIS)
+            os: windows-latest
+            target_flag: --win
+          - name: macOS (DMG & Universal)
+            os: macos-latest
+            target_flag: --mac
+          - name: Linux (AppImage & DEB)
+            os: ubuntu-latest
+            target_flag: --linux
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools libfuse2
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify linter and typecheck
+        run: |
+          npm run lint
+          npm run typecheck
+
+      - name: Run test suite
+        run: npm run test
+
+      - name: Compile Vite bundle
+        run: npm run build
+
+      - name: Rebuild native better-sqlite3 for Electron
+        run: npx @electron/rebuild -f -w better-sqlite3
+
+      - name: Package installer with electron-builder
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Windows Code Signing (MANUAL STEP secrets)
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          # macOS Code Signing & Notarisation (MANUAL STEP secrets)
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          npx electron-builder ${{ matrix.target_flag }} --publish ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !inputs.dry_run) && 'always' || 'never' }}
+
+      - name: Generate SHA-256 Checksums
+        shell: bash
+        run: |
+          cd dist
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            certutil -hashfile * SHA256 > SHA256SUMS-${{ runner.os }}.txt || true
+          else
+            shasum -a 256 * > SHA256SUMS-${{ runner.os }}.txt 2>/dev/null || sha256sum * > SHA256SUMS-${{ runner.os }}.txt 2>/dev/null || true
+          fi
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.yml
+            dist/SHA256SUMS-*.txt
+          retention-days: 7
+

@@ -1,0 +1,248 @@
+// path: src/renderer/src/App.tsx
+import React, { useEffect, useState } from 'react';
+import {
+  FileText,
+  Users,
+  Database,
+  Moon,
+  Sun,
+  Plus,
+  Wifi,
+  WifiOff
+} from 'lucide-react';
+import { useUiStore } from './store/useUiStore';
+import { useDraftStore } from './store/useDraftStore';
+import { useNetworkStatus } from './hooks/useNetworkStatus';
+import { Toast } from './components/common/Toast';
+import { DraftRecoveryBanner } from './components/common/DraftRecoveryBanner';
+import { InvoiceList } from './components/invoices/InvoiceList';
+import { InvoiceEditor } from './components/invoices/InvoiceEditor';
+import { ClientList } from './components/clients/ClientList';
+import { ClientModal } from './components/clients/ClientModal';
+import { BackupView } from './components/backups/BackupView';
+
+export const App: React.FC = () => {
+  const [appVersion, setAppVersion] = useState<string>('0.1.0');
+  const [platform, setPlatform] = useState<string>('unknown');
+
+  const currentView = useUiStore(state => state.currentView);
+  const setCurrentView = useUiStore(state => state.setCurrentView);
+  const isDark = useUiStore(state => state.isDark);
+  const toggleTheme = useUiStore(state => state.toggleTheme);
+  const openCreateClientModal = useUiStore(state => state.openCreateClientModal);
+
+  const resetDraft = useDraftStore(state => state.resetDraft);
+  const { isOnline, status } = useNetworkStatus();
+
+  useEffect(() => {
+    if (window.api && window.api.app) {
+      window.api.app
+        .getVersion()
+        .then(setAppVersion)
+        .catch(() => {});
+      window.api.app
+        .getPlatform()
+        .then(setPlatform)
+        .catch(() => {});
+
+      // Register menu accelerator listeners
+      const unsubscribe = window.api.app.onMenuAction((action: string) => {
+        switch (action) {
+          case 'new-invoice':
+            resetDraft();
+            setCurrentView('editor');
+            break;
+          case 'new-client':
+            openCreateClientModal();
+            break;
+          case 'open-invoices':
+            setCurrentView('invoices');
+            break;
+          case 'open-clients':
+            setCurrentView('clients');
+            break;
+          case 'open-backups':
+            setCurrentView('backups');
+            break;
+          default:
+            break;
+        }
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    }
+    return undefined;
+  }, [resetDraft, setCurrentView, openCreateClientModal]);
+
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      // Check for Ctrl / Meta key combinations
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
+        if (e.key.toLowerCase() === 'n') {
+          e.preventDefault();
+          resetDraft();
+          setCurrentView('editor');
+        } else if (e.key.toLowerCase() === 'b') {
+          e.preventDefault();
+          setCurrentView('backups');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [resetDraft, setCurrentView]);
+
+  return (
+    <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100 transition-colors">
+      {/* Top Application Bar */}
+      <header className="flex h-14 items-center justify-between border-b border-slate-800 bg-slate-900/80 px-6 backdrop-blur">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 font-bold text-white shadow-lg shadow-emerald-900/40">
+            IS
+          </div>
+          <div>
+            <h1 className="text-sm font-semibold tracking-wide text-white">Invoice Studio</h1>
+            <p className="text-[11px] text-slate-400">Offline-First Kenya SME Invoicing</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Network Status Pill */}
+          <div
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+              status === 'online'
+                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                : 'border-amber-500/30 bg-amber-500/10 text-amber-400'
+            }`}
+          >
+            {isOnline ? (
+              <>
+                <Wifi className="h-3 w-3" />
+                <span>Online</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="h-3 w-3" />
+                <span>Offline Native</span>
+              </>
+            )}
+          </div>
+
+          {/* Dark / Light Mode Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="rounded-lg border border-slate-800 bg-slate-900 p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+            aria-label="Toggle theme mode"
+          >
+            {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
+          </button>
+
+          {/* Sandboxed Badge */}
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Sandboxed Native
+          </span>
+
+          {/* Version */}
+          <span className="rounded-md border border-slate-700 bg-slate-800 px-2 py-0.5 text-xs text-slate-300">
+            v{appVersion} ({platform})
+          </span>
+        </div>
+      </header>
+
+      {/* Crash Draft Recovery Banner */}
+      <DraftRecoveryBanner />
+
+      {/* Navigation Sub-Header */}
+      <nav className="flex items-center justify-between border-b border-slate-800/80 bg-slate-900/40 px-6 py-2.5">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setCurrentView('invoices')}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
+              currentView === 'invoices'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+            }`}
+          >
+            <FileText className="h-3.5 w-3.5" />
+            Invoices
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setCurrentView('clients')}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
+              currentView === 'clients'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+            }`}
+          >
+            <Users className="h-3.5 w-3.5" />
+            Clients
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setCurrentView('backups')}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
+              currentView === 'backups'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+            }`}
+          >
+            <Database className="h-3.5 w-3.5" />
+            Backups &amp; Safety
+          </button>
+
+          {currentView === 'editor' && (
+            <button
+              type="button"
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 text-white px-3.5 py-1.5 text-xs font-medium shadow-sm"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              Invoice Editor
+            </button>
+          )}
+        </div>
+
+        {currentView !== 'editor' && (
+          <button
+            type="button"
+            onClick={() => {
+              resetDraft();
+              setCurrentView('editor');
+            }}
+            className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow hover:bg-emerald-500"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Create Invoice
+          </button>
+        )}
+      </nav>
+
+      {/* Main View Area */}
+      <main className="flex-1 p-6">
+        <h2 className="sr-only">Invoicing Workspace</h2>
+        <div className="mx-auto max-w-7xl">
+          {currentView === 'invoices' && <InvoiceList />}
+          {currentView === 'clients' && <ClientList />}
+          {currentView === 'editor' && <InvoiceEditor />}
+          {currentView === 'backups' && <BackupView />}
+        </div>
+      </main>
+
+      {/* Modals & Feedback Notifications */}
+      <ClientModal />
+      <Toast />
+    </div>
+  );
+};

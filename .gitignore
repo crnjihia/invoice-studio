@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+out/
+build/
+release/
+
+# SQLite databases, WAL, and shm files
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-wal
+*.db-shm
+
+# Local user backups and test attachments
+backups/
+receipts/
+*.pdf
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Temporary test directories & test outputs
+temp-test*
+temp-*
+test-results/
+playwright-report/
