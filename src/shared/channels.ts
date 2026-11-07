@@ -57,7 +57,8 @@ export const IPC_CHANNELS = {
     LIST: 'backup:list',
     SELECT_FOLDER: 'backup:select-folder',
     PREVIEW: 'backup:preview',
-    RESTORE: 'backup:restore'
+    RESTORE: 'backup:restore',
+    SEED_DEMO_DATA: 'backup:seed-demo-data'
   },
   DRAFT: {
     SAVE_SNAPSHOT: 'draft:save-snapshot',

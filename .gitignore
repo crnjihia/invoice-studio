@@ -16,8 +16,8 @@ release/
 *.db-shm
 
 # Local user backups and test attachments
-backups/
-receipts/
+/backups/
+/receipts/
 *.pdf
 
 # Environment variables

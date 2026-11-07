@@ -7,6 +7,7 @@ import { RestoreRequestSchema, TriggerBackupRequestSchema } from '@shared/schema
 import { getDatabase } from '../../db/connection';
 import { createOnlineBackup, listBackups } from '../../db/backup';
 import { executeRestore, previewBackup } from '../../db/restore';
+import { seedDatabase } from '../../db/seed';
 
 export function registerBackupHandlers(): void {
   // Trigger backup
@@ -50,4 +51,18 @@ export function registerBackupHandlers(): void {
   ipcRegistry.register(IPC_CHANNELS.BACKUP.RESTORE, RestoreRequestSchema, async input => {
     return await executeRestore(input.backupPath);
   });
+
+  // Seed rich demo data
+  ipcRegistry.register(
+    IPC_CHANNELS.BACKUP.SEED_DEMO_DATA,
+    z.object({ forceReset: z.boolean().optional() }),
+    async input => {
+      const db = getDatabase();
+      const result = seedDatabase(db, input.forceReset ?? true);
+      return {
+        success: true,
+        ...result
+      };
+    }
+  );
 }

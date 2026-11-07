@@ -33,7 +33,7 @@ if (!gotTheLock) {
 
   app.whenReady().then(async () => {
     // 1. Initialize SQLite database with WAL and migrations
-    await initializeDatabase();
+    await initializeDatabase({ seedIfEmpty: true });
 
     // 2. Base platform IPC handlers
     ipcMain.handle('app:get-version', () => app.getVersion());

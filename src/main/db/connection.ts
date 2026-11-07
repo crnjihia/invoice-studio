@@ -5,6 +5,7 @@ import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { checkDatabaseIntegrity, IntegrityCheckResult } from './integrity';
 import { runMigrations } from './migrator';
+import { seedDatabase } from './seed';
 
 let dbInstance: Database.Database | null = null;
 let currentDbPath: string | null = null;
@@ -12,6 +13,7 @@ let currentDbPath: string | null = null;
 export interface InitDbOptions {
   customPath?: string;
   skipMigrations?: boolean;
+  seedIfEmpty?: boolean;
 }
 
 /**
@@ -67,6 +69,15 @@ export async function initializeDatabase(
     } else if (!options.skipMigrations) {
       // Execute migrations unless explicitly skipped
       await runMigrations(db, dbPath);
+
+      // Automatically populate initial Kenyan demo data if requested and database is empty
+      if (options.seedIfEmpty) {
+        try {
+          seedDatabase(db, false);
+        } catch (seedErr: unknown) {
+          console.warn('[Database] Optional seed failed:', seedErr);
+        }
+      }
     }
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);

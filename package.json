@@ -14,6 +14,7 @@
     "dev": "node scripts/dev.js",
     "start": "node scripts/start.js",
     "build": "electron-vite build",
+    "seed": "node scripts/seed.js",
     "postinstall": "node scripts/setup-deps.js",
     "test": "node scripts/run-tests.js run",
     "test:watch": "node scripts/run-tests.js",

@@ -106,6 +106,14 @@ export interface IpcApi {
     restore: (
       backupPath: string
     ) => Promise<{ success: boolean; preRestoreSnapshotPath: string | null }>;
+    seedDemoData: (
+      forceReset?: boolean
+    ) => Promise<{
+      success: boolean;
+      clientCount: number;
+      invoiceCount: number;
+      expenseCount: number;
+    }>;
   };
   drafts: {
     saveSnapshot: (

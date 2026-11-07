@@ -193,7 +193,21 @@ contextBridge.exposeInMainWorld('api', {
       invokeChannel<{ success: boolean; preRestoreSnapshotPath: string | null }>(
         IPC_CHANNELS.BACKUP.RESTORE,
         { backupPath }
-      )
+      ),
+    seedDemoData: (
+      forceReset = true
+    ): Promise<{
+      success: boolean;
+      clientCount: number;
+      invoiceCount: number;
+      expenseCount: number;
+    }> =>
+      invokeChannel<{
+        success: boolean;
+        clientCount: number;
+        invoiceCount: number;
+        expenseCount: number;
+      }>(IPC_CHANNELS.BACKUP.SEED_DEMO_DATA, { forceReset })
   },
   drafts: {
     saveSnapshot: (
