@@ -15,3 +15,4 @@ const child = spawn(npxCmd, ['electron-vite', 'dev'], {
 child.on('exit', code => {
   process.exit(code ?? 0);
 });
+
