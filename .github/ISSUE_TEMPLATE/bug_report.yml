@@ -1,0 +1,63 @@
+# path: .github/ISSUE_TEMPLATE/bug_report.yml
+name: Bug Report
+description: Create a report to help us improve Invoice Studio
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue with **Invoice Studio**! Please fill out the details below.
+  - type: input
+    id: version
+    attributes:
+      label: Application Version
+      description: What version of Invoice Studio are you running? (Shown in the top right header pill, e.g. v0.1.0)
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - Windows 11 (x64)
+        - Windows 10 (x64)
+        - macOS (Apple Silicon M1/M2/M3)
+        - macOS (Intel x64)
+        - Linux (Ubuntu / Debian / AppImage)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what went wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Exact steps to reproduce the issue.
+      placeholder: |
+        1. Go to 'Invoices'
+        2. Click 'Create Invoice'
+        3. Enter line item with 16% VAT...
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console Logs / Screenshots
+      description: Attach any terminal outputs, error logs, or screenshots if applicable.
+    validations:
+      required: false
