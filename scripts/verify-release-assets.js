@@ -14,7 +14,7 @@ function verifyReleaseAssets(distDir = join(process.cwd(), 'dist')) {
   const files = readdirSync(distDir);
   console.log(`[VerifyAssets] Found ${files.length} items in dist folder.`);
 
-  const yamlFiles = files.filter(f => f.endsWith('.yml'));
+  const yamlFiles = files.filter(f => f.startsWith('latest') && f.endsWith('.yml'));
   const installers = files.filter(
     f => f.endsWith('.exe') || f.endsWith('.dmg') || f.endsWith('.AppImage') || f.endsWith('.deb')
   );

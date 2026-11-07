@@ -48,3 +48,4 @@ main().catch(err => {
   console.error('[Clear DB] Error:', err);
   process.exit(1);
 });
+
