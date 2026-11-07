@@ -94,7 +94,13 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        shell: bash
         run: |
+          [ -z "$WIN_CSC_LINK" ] && unset WIN_CSC_LINK
+          [ -z "$CSC_LINK" ] && unset CSC_LINK
+          [ -z "$APPLE_ID" ] && unset APPLE_ID
+          [ -z "$APPLE_APP_SPECIFIC_PASSWORD" ] && unset APPLE_APP_SPECIFIC_PASSWORD
+          [ -z "$APPLE_TEAM_ID" ] && unset APPLE_TEAM_ID
           npx electron-builder ${{ matrix.target_flag }} --publish ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !inputs.dry_run) && 'always' || 'never' }}
 
       - name: Generate SHA-256 Checksums
