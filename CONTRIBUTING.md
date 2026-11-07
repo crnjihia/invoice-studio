@@ -1,61 +1,86 @@
-<!-- path: CONTRIBUTING.md -->
 # Contributing to Invoice Studio
 
-Thank you for your interest in contributing to **Invoice Studio**! This project is crafted with high standards for security, data integrity, and offline reliability for Kenyan freelancers and SMEs.
+Thank you for your interest in contributing to **Invoice Studio**! We welcome bug reports, documentation enhancements, design improvements, and feature contributions from the community.
 
 ---
 
-## 1. Development Principles
+## 🏛️ Guiding Architectural Principles
 
-1. **Zero Data Loss**: Every data write, migration, and backup must guarantee crash safety. Never compromise transactional ACID guarantees.
-2. **Strict Process Isolation**: The renderer process is strictly sandboxed with `nodeIntegration: false`, `contextIsolation: true`, and an active Content Security Policy (CSP). Never expose raw `ipcRenderer`.
-3. **Integer Minor Units**: All monetary values are integer cents (`amountMinor`). Floating-point money arithmetic is prohibited.
-4. **Honest Scope**: Do not claim statutory tax compliance (such as KRA eTIMS) unless genuine API integration is implemented.
+Before contributing code, please keep in mind our core non-negotiable architectural tenets:
+
+1. **100% Offline-First by Default**: The core application must function completely without internet access. Features must never fail or block the UI due to lack of network connectivity.
+2. **ACID Storage & Zero Data Loss**: We rely on embedded SQLite with WAL mode (`PRAGMA synchronous = NORMAL`). Every write to critical financial data must be committed safely. Unsaved drafts must be preserved with atomic journals.
+3. **Integer Minor-Unit Money**: All financial values are handled as integer cents/minor units (e.g. `100000` = KES `1,000.00`). Floating-point numbers are strictly forbidden for currency storage and calculations.
+4. **Hardened Electron Security**: `contextIsolation` and `sandbox` must remain enabled. Raw `ipcRenderer` must never be exposed to the window. Every IPC call must be validated with strict Zod schemas and sender frame origin checks.
+5. **Kenyan Market Respect**: Maintain first-class support for KES formatting, 16% VAT, KRA PIN rules, and Safaricom M-Pesa settlement references.
 
 ---
 
-## 2. Local Setup & Workflow
+## 🛠️ Development Workflow
 
+### 1. Prerequisites
+- **Node.js**: v20+ LTS
+- **npm**: v10+
+- **Git**
+
+### 2. Setup
 ```bash
-# Clone the repository
-git clone https://github.com/crnjis/invoice-studio.git
+# Clone your fork
+git clone https://github.com/<your-username>/invoice-studio.git
 cd invoice-studio
 
-# Install dependencies (runs prebuild setup for Electron ABI)
+# Install dependencies (configures native better-sqlite3 for Electron 31)
 npm install
+```
 
-# Start Electron in development mode with HMR
+### 3. Running Locally
+```bash
+# Start Vite development server and Electron with hot reload
 npm run dev
+
+# Or test production build output
+npm run build
+npm start
+```
+
+### 4. Running Tests
+All pull requests must pass the complete test suite:
+```bash
+# Run TypeScript typechecking across Node and Web targets
+npm run typecheck
+
+# Run ESLint analysis
+npm run lint
+
+# Run all unit and integration test suites
+npm test
+
+# Run 10,000 invoices performance benchmark
+npm run test:perf
 ```
 
 ---
 
-## 3. Quality Standards & Pre-Commit Verification
+## 📝 Commit Conventions
 
-Before submitting a Pull Request, ensure that all verification gates pass:
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-```bash
-# 1. Format code with Prettier
-npm run format
+- `feat:` A new user-facing feature
+- `fix:` A bug fix
+- `docs:` Documentation updates
+- `test:` Adding or updating tests
+- `refactor:` Code change that neither fixes a bug nor adds a feature
+- `chore:` Maintenance, dependency updates, packaging scripts
+- `perf:` Performance optimizations
 
-# 2. Run ESLint with zero errors/warnings
-npm run lint
+---
 
-# 3. Verify TypeScript strict typecheck across Node and Web
-npm run typecheck
+## 🚀 Submitting a Pull Request
 
-# 4. Run Vitest test suite (unit, integration & scale tests)
-npm test
-
-# 5. Run Playwright Electron E2E integration test
-npm run test:e2e
-```
-
-### Commit Conventions
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
-- `feat(scope): ...`
-- `fix(scope): ...`
-- `test(scope): ...`
-- `docs(scope): ...`
-- `refactor(scope): ...`
-
+1. Create a feature branch from `main`:
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+2. Commit your changes with clear, descriptive commit messages.
+3. Verify that `npm run typecheck`, `npm run lint`, and `npm test` pass with zero errors.
+4. Push your branch to GitHub and open a Pull Request using our [PR Template](.github/pull_request_template.md).
