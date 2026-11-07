@@ -38,9 +38,12 @@
 
 | File | Platform | Architecture | Description |
 |---|---|---|---|
-| `Invoice Studio-Setup-0.1.0-x64.exe` | Windows | x64 (64-bit) | Full NSIS Windows Installer with Desktop & Start Menu shortcuts |
-| `Invoice Studio-Setup-0.1.0-x64.exe.blockmap` | Windows | x64 | Differential blockmap for low-bandwidth auto-updates |
-| `latest.yml` | All | N/A | Electron-updater release manifest with SHA-512 hashes |
+| `Invoice-Studio-Setup-0.1.0-x64.exe` | Windows | x64 (64-bit) | Full NSIS Windows Installer with Desktop & Start Menu shortcuts |
+| `Invoice-Studio-0.1.0-arm64.dmg` | macOS | arm64 (Apple Silicon) | macOS Disk Image for M1/M2/M3/M4 Macs |
+| `Invoice-Studio-0.1.0-x64.dmg` | macOS | x64 (Intel) | macOS Disk Image for Intel Macs |
+| `Invoice-Studio-0.1.0-x86_64.AppImage` | Linux | x64 | Portable standalone Linux AppImage executable |
+| `Invoice-Studio-0.1.0-amd64.deb` | Linux | x64 | Debian / Ubuntu / Mint package |
+| `latest.yml`, `latest-mac.yml`, `latest-linux.yml` | All | N/A | Electron-updater release manifests with SHA-512 hashes |
 | `SHA256SUMS.txt` | All | N/A | Cryptographic SHA-256 verification checksums |
 
 ---
